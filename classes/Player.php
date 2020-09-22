@@ -5,6 +5,7 @@ class Player
 {
     private array $cards;
     private bool $lost = false;
+    private Deck $deck;
 
     /**
      * Player constructor.
@@ -12,9 +13,11 @@ class Player
      */
     public function __construct(Deck $deck)
     {
-        $playerCard1 = $deck->drawCard();
-        $playerCard2 = $deck->drawCard();
+        $this->deck = $deck;
+        $playerCard1 = $this->deck->drawCard();
+        $playerCard2 = $this->deck->drawCard();
         $this->cards = [$playerCard1, $playerCard2];
+        $_SESSION["blackjack-player-cards"] = $this->cards;
     }
 
     /**
@@ -22,13 +25,15 @@ class Player
      */
     public function getCards(): array
     {
-        return $this->cards;
+//        return $this->cards;
+        return $_SESSION["blackjack-player-cards"];
     }
 
-    public function Hit(Deck $deck): array
+    public function Hit(): array
     {
-        $this->cards[] = $deck->drawCard();
-        return $this->cards;
+        $temp = $this->getCards();
+        $temp[] = $this->deck->drawCard();
+        return $temp;
     }
 
     public function Surrender(): void
