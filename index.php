@@ -12,7 +12,9 @@ $blackjack = unserialize($_SESSION['blackjack'], ['allowed_classes' => true]) ??
 $player = $blackjack->getPlayer();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // TODO: one action var in post
     if (isset($_POST['hit'])) {
+        var_dump($_POST);
         $player->Hit();
 
     } elseif (isset($_POST['stand'])) {

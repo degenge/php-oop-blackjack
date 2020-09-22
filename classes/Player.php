@@ -17,7 +17,6 @@ class Player
         $playerCard1 = $this->deck->drawCard();
         $playerCard2 = $this->deck->drawCard();
         $this->cards = [$playerCard1, $playerCard2];
-        $_SESSION["blackjack-player-cards"] = $this->cards;
     }
 
     /**
@@ -25,15 +24,13 @@ class Player
      */
     public function getCards(): array
     {
-//        return $this->cards;
-        return $_SESSION["blackjack-player-cards"];
+        return $this->cards;
     }
 
     public function Hit(): array
     {
-        $temp = $this->getCards();
-        $temp[] = $this->deck->drawCard();
-        return $temp;
+        $this->cards[] = $this->deck->drawCard();
+        return $this->cards;
     }
 
     public function Surrender(): void
