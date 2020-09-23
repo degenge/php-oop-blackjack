@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 class Player
 {
+    public const ACTION_HIT = 'hit';
+    public const ACTION_STAND = 'stand';
+    public const ACTION_SURRENDER = 'surrender';
+    public const ACTION_NEW = 'new';
+
     private array $cards;
     private bool $lost = false;
-    private Deck $deck;
+    private int $score = 0;
 
     /**
      * Player constructor.
@@ -13,9 +18,8 @@ class Player
      */
     public function __construct(Deck $deck)
     {
-        $this->deck = $deck;
-        $playerCard1 = $this->deck->drawCard();
-        $playerCard2 = $this->deck->drawCard();
+        $playerCard1 = $deck->drawCard();
+        $playerCard2 = $deck->drawCard();
         $this->cards = [$playerCard1, $playerCard2];
     }
 
@@ -27,25 +31,31 @@ class Player
         return $this->cards;
     }
 
-    public function Hit(): array
+    public function hit(Deck $deck): Player
     {
-        $this->cards[] = $this->deck->drawCard();
-        return $this->cards;
+        //TODO: return this
+        $this->cards[] = $deck->drawCard();
+        return $this;
     }
 
-    public function Surrender(): void
-    {
-
-    }
-
-    public function getScore(): void
+    public function surrender(): void
     {
 
     }
 
-    public function hasLost(): void
+    public function getScore(): int
     {
+//        print_r($this->cards);
+//        die;
+        foreach ($this->cards as $card) {
+            $this->score += $card->getValue();
+        }
+        return $this->score;
+    }
 
+    public function hasLost(): bool
+    {
+        return $this->score > 21;
     }
 
 }

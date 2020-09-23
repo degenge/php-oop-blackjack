@@ -7,20 +7,36 @@ spl_autoload_register(static function ($class_name) {
 });
 
 session_start();
+if (!isset($_SESSION['blackjack'])){
+    $_SESSION['blackjack'] = serialize(new Blackjack());
+}
+//var_dump($_SESSION);
+//session_unset();
+//var_dump($_SESSION);
+//die('Session cleared...');
+
+//$_SESSION['blackjack'] = serialize(new Blackjack());
+//var_dump($_SESSION);
+//die;
 
 $blackjack = unserialize($_SESSION['blackjack'], ['allowed_classes' => true]) ?? new Blackjack();
 $player = $blackjack->getPlayer();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // TODO: one action var in post
-    if (isset($_POST['hit'])) {
-        var_dump($_POST);
-        $player->Hit();
-
-    } elseif (isset($_POST['stand'])) {
-        echo "stand";
-    } else {
-        echo "surrender";
+if (!empty($_POST['action'])) {
+    switch ($_POST['action']) {
+        case Player::ACTION_HIT:
+            $player->hit($blackjack->getDeck());
+            break;
+        case Player::ACTION_STAND:
+            echo 'stand';
+            break;
+        case Player::ACTION_SURRENDER:
+            echo 'surrender';
+            break;
+        case Player::ACTION_NEW:
+            session_destroy( );
+            $_SESSION['blackjack'] = serialize(new Blackjack());
+            break;
     }
 }
 

@@ -64,6 +64,12 @@
                 echo '<span style="font-size: 100px;">' . $card->getUnicodeCharacter(true) . '</span>';
             }
             ?>
+
+            <p style="font-size: 20px;">Your score: <?php echo $player->getScore(); ?></p >
+            <?php if ($player->hasLost()) { ?>
+                <p style="font-size: 20px;">You lost!</p >
+            <?php } ?>
+
             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="" >
 
                 <?php require('form-blackjack.php'); ?>
