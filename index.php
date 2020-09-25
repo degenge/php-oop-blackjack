@@ -7,40 +7,50 @@ spl_autoload_register(static function ($class_name) {
 });
 
 session_start();
-if (!isset($_SESSION['blackjack'])){
-    $_SESSION['blackjack'] = serialize(new Blackjack());
-}
 //var_dump($_SESSION);
 //session_unset();
 //var_dump($_SESSION);
 //die('Session cleared...');
 
-//$_SESSION['blackjack'] = serialize(new Blackjack());
-//var_dump($_SESSION);
-//die;
+if (isset($_POST['new'])) {
+    unset($blackjack);
+    session_unset();
+}
 
-$blackjack = unserialize($_SESSION['blackjack'], ['allowed_classes' => true]) ?? new Blackjack();
-$player = $blackjack->getPlayer();
+if (!isset($_SESSION['blackjack'])) {
+    $blackjack             = new Blackjack();
+    $_SESSION['blackjack'] = serialize($blackjack);
+} else {
+    $blackjack = unserialize($_SESSION['blackjack'], [Blackjack::class]);
+}
+
+//$blackjack = unserialize($_SESSION['blackjack'], ['allowed_classes' => true]) ?? new Blackjack();
 
 if (!empty($_POST['action'])) {
     switch ($_POST['action']) {
         case Player::ACTION_HIT:
-            $player->hit($blackjack->getDeck());
+            if (!$blackjack->getPlayer()->hasLost()) {
+                $blackjack->getPlayer()->hit($blackjack->getDeck());
+            }
+            $_SESSION['blackjack'] = serialize($blackjack);
             break;
         case Player::ACTION_STAND:
-            echo 'stand';
+            $blackjack->getPlayer()->setStand(true);
+            $blackjack->getDealer()->hit($blackjack->getDeck());
+            // Check score
+            if (($blackjack->getDealer()->getScore() <= 21) && ($blackjack->getDealer()->getScore() > $blackjack->getPlayer()->getScore())) {
+                $blackjack->getPlayer()->setLost(true);
+
+            } else {
+                $blackjack->getDealer()->setLost(true);
+            }
+            $_SESSION['blackjack'] = serialize($blackjack);
             break;
         case Player::ACTION_SURRENDER:
-            echo 'surrender';
-            break;
-        case Player::ACTION_NEW:
-            session_destroy( );
-            $_SESSION['blackjack'] = serialize(new Blackjack());
+            $blackjack->getPlayer()->setLost(true);
             break;
     }
 }
-
-$_SESSION['blackjack'] = serialize($blackjack);
 
 require('view_form.php');
 

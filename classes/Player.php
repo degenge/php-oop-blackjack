@@ -7,10 +7,11 @@ class Player
     public const ACTION_STAND = 'stand';
     public const ACTION_SURRENDER = 'surrender';
     public const ACTION_NEW = 'new';
-
+    protected bool $lost;
     private array $cards;
-    private bool $lost = false;
-    private int $score = 0;
+//    private bool $lost = false;
+    private bool $stand;
+    private int $score;
 
     /**
      * Player constructor.
@@ -21,6 +22,16 @@ class Player
         $playerCard1 = $deck->drawCard();
         $playerCard2 = $deck->drawCard();
         $this->cards = [$playerCard1, $playerCard2];
+        $this->lost  = false;
+        $this->stand = false;
+    }
+
+    /**
+     * @param bool $lost
+     */
+    public function setLost(bool $lost): void
+    {
+        $this->lost = $lost;
     }
 
     /**
@@ -31,31 +42,48 @@ class Player
         return $this->cards;
     }
 
-    public function hit(Deck $deck): Player
+    public function hit(Deck $deck): array
     {
-        //TODO: return this
         $this->cards[] = $deck->drawCard();
-        return $this;
-    }
-
-    public function surrender(): void
-    {
-
+        if ($this->getScore() > 21) {
+            $this->lost = true;
+        }
+        return $this->cards;
     }
 
     public function getScore(): int
     {
-//        print_r($this->cards);
-//        die;
+        $this->score = 0;
         foreach ($this->cards as $card) {
             $this->score += $card->getValue();
         }
         return $this->score;
     }
 
+    /**
+     * @return bool
+     */
+    public function isStand(): bool
+    {
+        return $this->stand;
+    }
+
+    /**
+     * @param bool $stand
+     */
+    public function setStand(bool $stand): void
+    {
+        $this->stand = $stand;
+    }
+
+    public function surrender(): void
+    {
+        $this->lost = true;
+    }
+
     public function hasLost(): bool
     {
-        return $this->score > 21;
+        return $this->lost;
     }
 
 }
