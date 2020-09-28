@@ -20,7 +20,7 @@
     <title >PHP OOP Blackjack</title >
 </head >
 
-<body class="" >
+<body class=""  >
 
 <div class="" >
 
